@@ -1,8 +1,10 @@
 import de.bezier.guido.*;
 //Declare and initialize constants NUM_ROWS and NUM_COLS = 20
+public final static int NUM_ROWS=30;
+public final static int NUM_COLS=30;
 private Life[][] buttons; //2d array of Life buttons each representing one cell
 private boolean[][] buffer; //2d array of booleans to store state of buttons array
-private boolean running = true; //used to start and stop program
+private boolean running = false; //used to start and stop program
 
 public void setup () {
   size(400, 400);
@@ -11,8 +13,12 @@ public void setup () {
   Interactive.make( this );
 
   //your code to initialize buttons goes here
-
-  //your code to initialize buffer goes here
+buttons = new Life[NUM_ROWS][NUM_COLS];
+for(int r=0; r<NUM_ROWS; r++)
+  for(int c=0; c<NUM_COLS; c++)
+    buttons[r][c]= new Life(r,c);
+  //your code to initialize  buffer goes here
+  buffer= new boolean[NUM_ROWS][NUM_COLS];
 }
 
 public void draw () {
@@ -22,31 +28,80 @@ public void draw () {
   copyFromButtonsToBuffer();
 
   //use nested loops to draw the buttons here
-
+  for(int r=0; r<NUM_ROWS; r++){
+    for(int c=0; c<NUM_COLS; c++){
+      if(countNeighbors(r,c)==3)
+        {buffer[r][c]=true;}
+      else if (countNeighbors(r,c)==2 && buttons[r][c].getLife()==true)
+        {buffer[r][c]=true;}
+      else
+        {buffer[r][c]=false;}
+      buttons[r][c].draw();
+    }
+  }
   copyFromBufferToButtons();
 }
 
 public void keyPressed() {
   //your code here
+  if(running==true)
+    running=false;
+  else if(running==false)
+    running=true;
 }
 
 public void copyFromBufferToButtons() {
   //your code here
+  for(int r=0; r<NUM_ROWS; r++){
+    for(int c=0; c<NUM_COLS; c++){
+      if(buffer[r][c]==true){
+        buttons[r][c].setLife(true);}
+      
+      if(buffer[r][c]==false){
+        buttons[r][c].setLife(false);}
+    }
+  }
 }
 
 public void copyFromButtonsToBuffer() {
   //your code here
+  for(int r=0; r<NUM_ROWS; r++){
+    for(int c=0; c<NUM_COLS; c++){
+       if(buttons[r][c].getLife()==true)
+         buffer[r][c]=true;
+       
+       if(buttons[r][c].getLife()==false)
+         buffer[r][c]=false;
+    } 
+    }
 }
 
 public boolean isValid(int r, int c) {
-  //your code here
+  if(r<=19 && r>=0)
+    if(c<=19 && c>=0)
+      return true;
   return false;
 }
 
 public int countNeighbors(int row, int col) {
-  int neighbors = 0;
-  //your code here
-  return neighbors;
+  int count = 0;
+  if(isValid(row+1, col+1) == true && buttons[row+1][col+1].getLife()==true)
+    count++;
+  if(isValid(row, col+1) == true && buttons[row][col+1].getLife()==true)
+    count++;
+  if(isValid(row+1, col) == true && buttons[row+1][col].getLife()==true)
+    count++;
+  if(isValid(row-1, col-1) == true && buttons[row-1][col-1].getLife()==true)
+    count++;
+  if(isValid(row-1, col) == true && buttons[row-1][col].getLife()==true)
+    count++;
+  if(isValid(row, col-1) == true && buttons[row][col-1].getLife()==true)
+    count++;
+  if(isValid(row+1, col-1) == true && buttons[row+1][col-1].getLife()==true)
+    count++;
+  if(isValid(row-1,col+1)== true && buttons[row-1][col+1].getLife()==true)
+    count++;
+  return count;
 }
 
 public class Life {
@@ -55,8 +110,8 @@ public class Life {
   private boolean alive;
 
   public Life (int row, int col) {
-    // width = 400/NUM_COLS;
-    // height = 400/NUM_ROWS;
+    width = 400/NUM_COLS;
+    height = 400/NUM_ROWS;
     myRow = row;
     myCol = col; 
     x = myCol*width;
@@ -73,14 +128,18 @@ public class Life {
     if (alive != true)
       fill(0);
     else 
-      fill( 150 );
+      fill(50,150,0);
     rect(x, y, width, height);
   }
   public boolean getLife() {
-    //replace the code one line below with your code
+    if(alive==true)
+      return true;
     return false;
   }
   public void setLife(boolean living) {
-    //your code here
+   if(living==true)
+      alive=true;
+   if(living==false)
+     alive=false;
   }
 }
